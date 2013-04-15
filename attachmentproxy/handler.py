@@ -20,8 +20,6 @@ __author__ = 'alainv@google.com (Alain Vongsouvanh)'
 import logging
 import webapp2
 
-from apiclient.model import MediaModel
-
 from util import auth_required
 
 
