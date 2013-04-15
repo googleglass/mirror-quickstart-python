@@ -1,3 +1,5 @@
+session.secret
+
 *.py[cod]
 
 # C extensions
