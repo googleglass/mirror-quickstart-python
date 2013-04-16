@@ -21,7 +21,6 @@ from urlparse import urlparse
 
 import httplib2
 from apiclient.discovery import build
-from apiclient.discovery import build_from_document
 from oauth2client.appengine import StorageByKeyName
 import sessions
 
@@ -76,14 +75,7 @@ def create_service(service, version, creds=None):
     # Authorize the Http instance with the passed credentials
     creds.authorize(http)
 
-  # Build a service from the passed discovery document path
-  if service == 'mirror':
-    discovery_file = open('mirror.v1.json')
-    result = build_from_document(discovery_file.read(), http=http)
-    discovery_file.close()
-    return result
-  else:
-    return build(service, version, http=http)
+  return build(service, version, http=http)
 
 
 def auth_required(handler_method):
