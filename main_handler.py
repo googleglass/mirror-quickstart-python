@@ -26,8 +26,10 @@ import webapp2
 from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 
+import httplib2
 from apiclient import errors
 from apiclient.http import MediaIoBaseUpload
+from apiclient.http import BatchHttpRequest
 from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
@@ -36,6 +38,28 @@ import util
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+
+class _BatchCallback(object):
+  """Class used to track batch request responses."""
+
+  def __init__(self):
+    """Initialize a new _BatchCallbaclk object."""
+    self.success = 0
+    self.failure = 0
+
+  def callback(self, request_id, response, exception):
+    """Method called on each HTTP Response from a batch request.
+
+    For more information, see
+      https://developers.google.com/api-client-library/python/guide/batch
+    """
+    if exception is None:
+      self.success += 1
+    else:
+      self.failure += 1
+      logging.error(
+          'Failed to insert item for user %s: %s', request_id, exception)
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -169,16 +193,20 @@ class MainHandler(webapp2.RequestHandler):
         'text': 'Hello Everyone!',
         'notification': {'level': 'DEFAULT'}
     }
+
+    batch_responses = _BatchCallback()
+    batch = BatchHttpRequest(callback=batch_responses.callback)
     for user in users:
       creds = StorageByKeyName(
           Credentials, user.key().name(), 'credentials').get()
       mirror_service = util.create_service('mirror', 'v1', creds)
-      try:
-        mirror_service.timeline().insert(body=body).execute()
-      except errors.HttpError, error:
-        logging.error(
-            'Unable to send item to user %s: %s', user.key().name(), error)
-    return 'Sent cards to %d users.' % total_users
+      batch.add(
+          mirror_service.timeline().insert(body=body),
+          request_id=user.key().name())
+
+    batch.execute(httplib2.Http())
+    return 'Successfully sent cards to %d users (%d failed).' % (
+        batch_responses.success, batch_responses.failure)
 
   def _insert_contact(self):
     """Insert a new Contact."""
