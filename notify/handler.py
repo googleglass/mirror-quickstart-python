@@ -51,7 +51,6 @@ class NotifyHandler(webapp2.RequestHandler):
     location = self.mirror_service.locations().get(id=data['itemId']).execute()
     text = 'New location is %s, %s' % (location.get('latitude'),
                                        location.get('longitude'))
-    logging.info(text)
     body = {
         'text': text,
         'location': location,
