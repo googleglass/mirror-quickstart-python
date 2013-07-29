@@ -84,13 +84,13 @@ limitations under the License.
             {% endif %}
           {% endfor %}
         </li>
-		<li>
-		  <form action="/" method="post">
-		    <input type="hidden" name="itemId" value="{{ timelineItem.id }}">
-		    <input type="hidden" name="operation" value="deleteTimelineItem">
-		    <button class="btn" type="submit">Delete Item</button>
-		  </form>
-		</li>
+        <li>
+          <form action="/" method="post">
+            <input type="hidden" name="itemId" value="{{ timelineItem.id }}">
+            <input type="hidden" name="operation" value="deleteTimelineItem">
+            <button class="btn" type="submit">Delete Item</button>
+          </form>
+        </li>
       </ul>
       {% endfor %}
     </div>
