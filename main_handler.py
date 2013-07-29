@@ -111,7 +111,8 @@ class MainHandler(webapp2.RequestHandler):
         'insertItemWithAction': self._insert_item_with_action,
         'insertItemAllUsers': self._insert_item_all_users,
         'insertContact': self._insert_contact,
-        'deleteContact': self._delete_contact
+        'deleteContact': self._delete_contact,
+		'deleteTimelineItem': self._delete_timeline_item
     }
     if operation in operations:
       message = operations[operation]()
@@ -233,6 +234,14 @@ class MainHandler(webapp2.RequestHandler):
     self.mirror_service.contacts().delete(
         id=self.request.get('id')).execute()
     return 'Contact has been deleted.'
+
+  def _delete_timeline_item(self):
+	"""Delete a Timeline Item."""
+	logging.info('Deleting timeline item')
+    # self.mirror_service is initialized in util.auth_required.
+    self.mirror_service.timeline().delete(id=self.request.get('itemId')).execute()
+    return 'A timeline item has been deleted.'
+	
 
 
 MAIN_ROUTES = [
