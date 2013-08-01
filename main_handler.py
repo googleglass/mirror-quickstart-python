@@ -112,7 +112,7 @@ class MainHandler(webapp2.RequestHandler):
         'insertItemAllUsers': self._insert_item_all_users,
         'insertContact': self._insert_contact,
         'deleteContact': self._delete_contact,
-		'deleteTimelineItem': self._delete_timeline_item
+        'deleteTimelineItem': self._delete_timeline_item
     }
     if operation in operations:
       message = operations[operation]()
