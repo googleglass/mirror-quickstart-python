@@ -22,6 +22,7 @@ from urlparse import urlparse
 import httplib2
 from apiclient.discovery import build
 from oauth2client.appengine import StorageByKeyName
+from oauth2client.client import AccessTokenRefreshError
 import sessions
 
 from model import Credentials
@@ -85,9 +86,15 @@ def auth_required(handler_method):
     self.userid, self.credentials = load_session_credentials(self)
     self.mirror_service = create_service('mirror', 'v1', self.credentials)
     # TODO: Also check that credentials are still valid.
-    if not self.credentials:
-      self.redirect('/auth')
-      return
-    else:
-      handler_method(self, *args)
+    if self.credentials:
+      try:
+        self.credentials.refresh(httplib2.Http())
+        return handler_method(self, *args)
+      except AccessTokenRefreshError:
+        # Access has been revoked.
+        store_userid(self, '')
+        credentials_entity = Credentials.get_by_key_name(self.userid)
+        if credentials_entity:
+          credentials_entity.delete()
+    self.redirect('/auth')
   return check_auth
