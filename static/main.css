@@ -1,0 +1,19 @@
+/* Add some padding to shift the body down underneath the navbar. */
+body {
+    padding-top: 60px;
+}
+
+@media (max-width: 980px) {
+    body {
+        padding-top: 0;
+    }
+}
+
+/* Get rid of margin under form controls that are in table cells. */
+table td form, table td input[type='text'], table td button {
+    margin-bottom: 0;
+}
+
+img.button-icon {
+    width: 60px;
+}
