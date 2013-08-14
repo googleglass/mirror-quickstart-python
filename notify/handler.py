@@ -65,27 +65,19 @@ class NotifyHandler(webapp2.RequestHandler):
       if user_action.get('type') == 'SHARE':
         # Fetch the timeline item.
         item = self.mirror_service.timeline().get(id=data['itemId']).execute()
-        attachments = item.get('attachments', [])
-        media = None
-        if attachments:
-          # Get the first attachment on that timeline item and do stuff with it.
-          attachment = self.mirror_service.timeline().attachments().get(
-              itemId=data['itemId'],
-              attachmentId=attachments[0]['id']).execute()
-          resp, content = self.mirror_service._http.request(
-              attachment['contentUrl'])
-          if resp.status == 200:
-            media = MediaIoBaseUpload(
-                io.BytesIO(content), attachment['contentType'],
-                resumable=True)
-          else:
-            logging.info('Unable to retrieve attachment: %s', resp.status)
+
+        # Create a dictionary with just the attributes that we want to patch.
         body = {
-            'text': 'Echoing your shared item: %s' % item.get('text', ''),
-            'notification': {'level': 'DEFAULT'}
+            'text': 'Python Quick Start got your photo! %s' % item.get('text', '')
         }
-        self.mirror_service.timeline().insert(
-            body=body, media_body=media).execute()
+
+        # Patch the item. Notice that since we retrieved the entire item above
+        # in order to access the caption, we could have just changed the text
+        # in place and used the update method, but we wanted to illustrate the
+        # patch method here.
+        self.mirror_service.timeline().patch(
+          id=data['itemId'], body=body).execute()
+
         # Only handle the first successful action.
         break
       else:
