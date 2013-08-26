@@ -49,8 +49,8 @@ class NotifyHandler(webapp2.RequestHandler):
   def _handle_locations_notification(self, data):
     """Handle locations notification."""
     location = self.mirror_service.locations().get(id=data['itemId']).execute()
-    text = 'New location is %s, %s' % (location.get('latitude'),
-                                       location.get('longitude'))
+    text = 'Python Quick Start says you are at %s by %s.' % \
+        (location.get('latitude'), location.get('longitude'))
     body = {
         'text': text,
         'location': location,
