@@ -22,11 +22,19 @@ import json
 import logging
 import webapp2
 
+from random import choice
 from apiclient.http import MediaIoBaseUpload
 from oauth2client.appengine import StorageByKeyName
 
 from model import Credentials
 import util
+
+
+CAT_UTTERANCES = [
+    "<em class='green'>Purr...</em>",
+    "<em class='red'>Hisss... scratch...</em>",
+    "<em class='yellow'>Meow...</em>"
+]
 
 
 class NotifyHandler(webapp2.RequestHandler):
@@ -62,10 +70,10 @@ class NotifyHandler(webapp2.RequestHandler):
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
     for user_action in data.get('userActions', []):
-      if user_action.get('type') == 'SHARE':
-        # Fetch the timeline item.
-        item = self.mirror_service.timeline().get(id=data['itemId']).execute()
+      # Fetch the timeline item.
+      item = self.mirror_service.timeline().get(id=data['itemId']).execute()
 
+      if user_action.get('type') == 'SHARE':
         # Create a dictionary with just the attributes that we want to patch.
         body = {
             'text': 'Python Quick Start got your photo! %s' % item.get('text', '')
@@ -80,6 +88,21 @@ class NotifyHandler(webapp2.RequestHandler):
 
         # Only handle the first successful action.
         break
+      elif user_action.get('type') == 'LAUNCH':
+        # Grab the spoken text from the timeline card and update the card with
+        # an HTML response (deleting the text as well).
+        note_text = item.get('text', '');
+        utterance = choice(CAT_UTTERANCES)
+
+        item['text'] = None
+        item['html'] = ("<article class='auto-paginate'>" +
+            "<p class='text-auto-size'>" +
+            "Oh, did you say " + note_text + "? " + utterance + "</p>" +
+            "<footer><p>Python Quick Start</p></footer></article>")
+        item['menuItems'] = [{ 'action': 'DELETE' }];
+
+        self.mirror_service.timeline().update(
+            id=item['id'], body=item).execute()
       else:
         logging.info(
             "I don't know what to do with this notification: %s", user_action)
