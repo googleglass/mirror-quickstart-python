@@ -186,7 +186,7 @@ class MainHandler(webapp2.RequestHandler):
         'html': PAGINATED_HTML,
         'notification': {'level': 'DEFAULT'},
         'menuItems': [{
-            'action': 'VIEW_WEBSITE',
+            'action': 'OPEN_URI',
             'payload': 'https://www.google.com/search?q=cat+maintenance+tips'
         }]
     }
