@@ -119,6 +119,11 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
       }
       mirror_service.subscriptions().insert(body=subscription_body).execute()
 
+      # The ID of the quick start contact has changed to python-quick-start.
+      # This will ensure that the old contact is removed for users who
+      # accessed the quick start before this change.
+      mirror_service.contacts().delete(id='Python Quick Start').execute()
+
       # Insert a sharing contact.
       contact_body = {
           'id': 'python-quick-start',
