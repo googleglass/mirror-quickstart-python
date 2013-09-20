@@ -40,11 +40,24 @@ jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
+PAGINATED_HTML = ("<article class='auto-paginate'>"
+    "<h2 class='blue text-large'>Did you know...?</h2>"
+    "<p>Cats are <em class='yellow'>solar-powered.</em> The time they spend "
+    "napping in direct sunlight is necessary to regenerate their internal "
+    "batteries. Cats that do not receive sufficient charge may exhibit the "
+    "following symptoms: lethargy, irritability, and disdainful glares. Cats "
+    "will reactivate on their own automatically after a complete charge "
+    "cycle; it is recommended that they be left undisturbed during this "
+    "process to maximize your enjoyment of your cat.</p><br/><p>"
+    "For more cat maintenance tips, tap to view the website!</p>"
+    "</article>")
+
+
 class _BatchCallback(object):
   """Class used to track batch request responses."""
 
   def __init__(self):
-    """Initialize a new _BatchCallbaclk object."""
+    """Initialize a new _BatchCallback object."""
     self.success = 0
     self.failure = 0
 
@@ -73,7 +86,7 @@ class MainHandler(webapp2.RequestHandler):
     # self.mirror_service is initialized in util.auth_required.
     try:
       template_values['contact'] = self.mirror_service.contacts().get(
-        id='Python Quick Start').execute()
+        id='python-quick-start').execute()
     except errors.HttpError:
       logging.info('Unable to find Python Quick Start contact.')
 
@@ -108,6 +121,7 @@ class MainHandler(webapp2.RequestHandler):
         'insertSubscription': self._insert_subscription,
         'deleteSubscription': self._delete_subscription,
         'insertItem': self._insert_item,
+        'insertPaginatedItem': self._insert_paginated_item,
         'insertItemWithAction': self._insert_item_with_action,
         'insertItemAllUsers': self._insert_item_all_users,
         'insertContact': self._insert_contact,
@@ -165,6 +179,21 @@ class MainHandler(webapp2.RequestHandler):
     self.mirror_service.timeline().insert(body=body, media_body=media).execute()
     return  'A timeline item has been inserted.'
 
+  def _insert_paginated_item(self):
+    """Insert a paginated timeline item."""
+    logging.info('Inserting paginated timeline item')
+    body = {
+        'html': PAGINATED_HTML,
+        'notification': {'level': 'DEFAULT'},
+        'menuItems': [{
+            'action': 'VIEW_WEBSITE',
+            'payload': 'https://www.google.com/search?q=cat+maintenance+tips'
+        }]
+    }
+    # self.mirror_service is initialized in util.auth_required.
+    self.mirror_service.timeline().insert(body=body).execute()
+    return  'A timeline item has been inserted.'
+
   def _insert_item_with_action(self):
     """Insert a timeline item user can reply to."""
     logging.info('Inserting timeline item')
@@ -212,6 +241,7 @@ class MainHandler(webapp2.RequestHandler):
   def _insert_contact(self):
     """Insert a new Contact."""
     logging.info('Inserting contact')
+    id = self.request.get('id')
     name = self.request.get('name')
     image_url = self.request.get('imageUrl')
     if not name or not image_url:
@@ -220,9 +250,10 @@ class MainHandler(webapp2.RequestHandler):
       if image_url.startswith('/'):
         image_url = util.get_full_url(self, image_url)
       body = {
-          'id': name,
+          'id': id,
           'displayName': name,
-          'imageUrls': [image_url]
+          'imageUrls': [image_url],
+          'acceptCommands': [{ 'type': 'TAKE_A_NOTE' }]
       }
       # self.mirror_service is initialized in util.auth_required.
       self.mirror_service.contacts().insert(body=body).execute()
