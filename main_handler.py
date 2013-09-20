@@ -40,17 +40,19 @@ jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
-PAGINATED_HTML = ("<article class='auto-paginate'>"
-    "<h2 class='blue text-large'>Did you know...?</h2>"
-    "<p>Cats are <em class='yellow'>solar-powered.</em> The time they spend "
-    "napping in direct sunlight is necessary to regenerate their internal "
-    "batteries. Cats that do not receive sufficient charge may exhibit the "
-    "following symptoms: lethargy, irritability, and disdainful glares. Cats "
-    "will reactivate on their own automatically after a complete charge "
-    "cycle; it is recommended that they be left undisturbed during this "
-    "process to maximize your enjoyment of your cat.</p><br/><p>"
-    "For more cat maintenance tips, tap to view the website!</p>"
-    "</article>")
+PAGINATED_HTML = """
+    <article class='auto-paginate'>
+    <h2 class='blue text-large'>Did you know...?</h2>
+    <p>Cats are <em class='yellow'>solar-powered.</em> The time they spend
+    napping in direct sunlight is necessary to regenerate their internal
+    batteries. Cats that do not receive sufficient charge may exhibit the
+    following symptoms: lethargy, irritability, and disdainful glares. Cats
+    will reactivate on their own automatically after a complete charge
+    cycle; it is recommended that they be left undisturbed during this
+    process to maximize your enjoyment of your cat.</p><br/><p>
+    For more cat maintenance tips, tap to view the website!</p>
+    </article>
+    """
 
 
 class _BatchCallback(object):
