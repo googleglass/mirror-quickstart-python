@@ -121,9 +121,10 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
 
       # Insert a sharing contact.
       contact_body = {
-          'id': 'Python Quick Start',
+          'id': 'python-quick-start',
           'displayName': 'Python Quick Start',
-          'imageUrls': [util.get_full_url(self, '/static/images/python.png')]
+          'imageUrls': [util.get_full_url(self, '/static/images/python.png')],
+          'acceptCommands': [{ 'type': 'TAKE_A_NOTE' }]
       }
       mirror_service.contacts().insert(body=contact_body).execute()
     else:

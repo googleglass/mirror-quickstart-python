@@ -124,16 +124,20 @@ limitations under the License.
 
       <form action="/" method="post">
         <input type="hidden" name="operation" value="insertItem">
-        <input type="hidden" name="message"
-               value="A solar eclipse of Saturn. Earth is also in this photo. Can you find it?">
+        <input type="hidden" name="message" value="Chipotle says 'hi'!">
         <input type="hidden" name="imageUrl"
-               value="/static/images/saturn-eclipse.jpg">
+               value="/static/images/chipotle-tube-640x360.jpg">
         <input type="hidden" name="contentType" value="image/jpeg">
 
         <button class="btn btn-block" type="submit">
           Insert a picture
-          <img class="button-icon" src="/static/images/saturn-eclipse.jpg">
+          <img class="button-icon" src="/static/images/chipotle-tube-640x360.jpg">
         </button>
+      </form>
+      <form action="/" method="post">
+        <input type="hidden" name="operation" value="insertPaginatedItem">
+        <button class="btn btn-block" type="submit">
+          Insert a card with long paginated HTML</button>
       </form>
       <form action="/" method="post">
         <input type="hidden" name="operation" value="insertItemWithAction">
@@ -160,7 +164,7 @@ limitations under the License.
       {% if contact %}
       <form action="/" method="post">
         <input type="hidden" name="operation" value="deleteContact">
-        <input type="hidden" name="id" value="Python Quick Start">
+        <input type="hidden" name="id" value="python-quick-start">
         <button class="btn btn-block btn-danger" type="submit">
           Delete Python Quick Start Contact
         </button>
@@ -170,13 +174,19 @@ limitations under the License.
         <input type="hidden" name="operation" value="insertContact">
         <input type="hidden" name="imageUrl"
                value="/static/images/python.png">
-        <input type="hidden" name="name"
-               value="Python Quick Start">
+        <input type="hidden" name="name" value="Python Quick Start">
+        <input type="hidden" name="id" value="python-quick-start">
         <button class="btn btn-block btn-success" type="submit">
           Insert Python Quick Start Contact
         </button>
       </form>
       {% endif %}
+
+      <h3>Voice Commands</h3>
+      <p>The "Python Quick Start" contact also accepts the <strong>take a
+        note</strong> command. Take a note with the "Python Quick Start"
+        contact and the cat in the server will record your note and reply
+        with one of a few cat utterances.</p>
     </div>
 
     <div class="span4">
