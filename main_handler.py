@@ -204,9 +204,21 @@ class MainHandler(webapp2.RequestHandler):
             'displayName': 'Python Starter Project',
             'id': 'PYTHON_STARTER_PROJECT'
         },
-        'text': 'Tell me what you had for lunch :)',
+        'text': 'Tell me what you had for brunch :)',
         'notification': {'level': 'DEFAULT'},
-        'menuItems': [{'action': 'REPLY'}]
+        'menuItems': [
+          {
+              "action": "CUSTOM",
+              "id": "complete",
+              "values": [{
+                "displayName": "Complete",
+                "iconUrl": "https://cdn3.iconfinder.com/data/icons/picons-social/57/28-appstore-64.png"
+              }]
+          },
+          {
+            'action': 'SHARE'
+          }
+        ]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
