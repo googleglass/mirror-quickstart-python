@@ -121,6 +121,7 @@ class MainHandler(webapp2.RequestHandler):
     # Dict of operations to easily map keys to methods.
     operations = {
         'insertSubscription': self._insert_subscription,
+        'trackTwitter': self._track_twitter,
         'deleteSubscription': self._delete_subscription,
         'insertItem': self._insert_item,
         'insertPaginatedItem': self._insert_paginated_item,
@@ -149,6 +150,14 @@ class MainHandler(webapp2.RequestHandler):
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.subscriptions().insert(body=body).execute()
     return 'Application is now subscribed to updates.'
+
+  def _track_twitter(self):
+    """Subscribe to the user's twitter account"""
+    # self.userid is initialized in util.auth_required.
+    logging.error(self.userid)
+    return 'Application is now subscribed to twitter.'
+
+
 
   def _delete_subscription(self):
     """Unsubscribe from notifications."""
