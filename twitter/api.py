@@ -3,15 +3,15 @@ import tweepy
 # Your application Twitter application ("consumer") key and secret.
 # You'll need to register an application on Twitter first to get this
 # information: http://www.twitter.com/oauth
-APPLICATION_KEY = "wVNq8OD84WGCU4ly3wzeg"
-APPLICATION_SECRET = "mhJMASHpNvbQUco9vIB8Eo04fzR9nQ7LCf5nH4dcHw"
+APPLICATION_KEY = ""
+APPLICATION_SECRET = ""
 
 # Fill in the next 2 lines after you have successfully logged in to 
 # Twitter per the instructions above. This is the *user's* token and 
 # secret. You need these values to call the API on their behalf after 
 # they have logged in to your app.
-USER_TOKEN = "49917710-IXh5cRQuV3LnkrFrmWkbbYauDfuaFmyQqki6Unvsa"
-USER_SECRET = "DjYMzdjxmjM8IgghHMkWAnBBi220mdF5KyXKaIQbd3hht"
+USER_TOKEN = ""
+USER_SECRET = ""
 
 def get_client():
   tweepy_auth = tweepy.OAuthHandler(APPLICATION_KEY, APPLICATION_SECRET)
