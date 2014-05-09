@@ -35,7 +35,6 @@ from oauth2client.appengine import StorageByKeyName
 from model import Credentials
 import util
 
-import tweepy
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -154,43 +153,26 @@ class MainHandler(webapp2.RequestHandler):
 
   def _track_twitter(self):
     """Subscribe to the user's twitter account"""
+    import twitter.api
 
-    # Your application Twitter application ("consumer") key and secret.
-    # You'll need to register an application on Twitter first to get this
-    # information: http://www.twitter.com/oauth
-    application_key = ""
-    application_secret = ""
-    
-    # Fill in the next 2 lines after you have successfully logged in to 
-    # Twitter per the instructions above. This is the *user's* token and 
-    # secret. You need these values to call the API on their behalf after 
-    # they have logged in to your app.
-    user_token = ""
-    user_secret = ""
-   
-    
-    auth = tweepy.OAuthHandler(application_key, application_secret)
-    auth.set_access_token(user_token, user_secret)
-    
-    api = tweepy.API(auth)
-    
-    public_tweets = api.home_timeline()
+    location = self.mirror_service.locations().get(id='latest').execute()
 
-    tweets = ""
+    trends = twitter.api.get_closest_trends(
+                          location.get('latitude'),
+                          location.get('longitude'))
 
-    for tweet in public_tweets:
-        tweets += tweet.text 
-        tweets += "\n"
+    summary = reduce ( (lambda summary,trend: summary + trend['name'] + "\n"),
+                       trends,"")
 
     body = {
         'notification': {'level': 'DEFAULT'},
-        'text' : tweets,
+        'text' : summary
     }
 
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()
 
-    logging.error(tweets)
+    logging.error(summary)
     return 'Application is now subscribed to twitter.'
 
   def _delete_subscription(self):
