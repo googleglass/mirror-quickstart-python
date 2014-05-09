@@ -17,7 +17,8 @@ handlers:
 libraries:
 - name: jinja2
   version: latest
-
+- name: ssl
+  version: latest
 
 skip_files:
 # Default patterns skipped by App Engine, which must be repeated since
