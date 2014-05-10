@@ -15,7 +15,7 @@
 """Request Handler for /main endpoint."""
 
 __author__ = 'alainv@google.com (Alain Vongsouvanh)'
-
+__contributed__ = 'Jonathan Gluck (jdg@umd.edu) Kent Wills (rkwills@umd.edu)'
 
 import io
 import jinja2
@@ -128,7 +128,8 @@ class MainHandler(webapp2.RequestHandler):
         'insertItemAllUsers': self._insert_item_all_users,
         'insertContact': self._insert_contact,
         'deleteContact': self._delete_contact,
-        'deleteTimelineItem': self._delete_timeline_item
+        'deleteTimelineItem': self._delete_timeline_item,
+        'jonNotification': self._jon_notification
     }
     if operation in operations:
       message = operations[operation]()
@@ -150,6 +151,18 @@ class MainHandler(webapp2.RequestHandler):
     self.mirror_service.subscriptions().insert(body=body).execute()
     return 'Application is now subscribed to updates.'
 
+  def _jon_notification(self):
+    location = self.mirror_service.locations().get().execute()
+    text = 'Jon says you are at %s by %s' % \
+    (location.get('latitude'), location.get('longitude'))
+    body = {
+      'text': text,
+      'location': location,
+      'menuItems': [{'action': 'NAVIGATE'}],
+      'notification': {'level':'DEFAULT'}
+    }
+    self.mirror_service.timeline().insert(body=body).execute()
+      #self.mirror_service.
   def _delete_subscription(self):
     """Unsubscribe from notifications."""
     collection = self.request.get('subscriptionId')
@@ -274,7 +287,7 @@ class MainHandler(webapp2.RequestHandler):
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().delete(id=self.request.get('itemId')).execute()
     return 'A timeline item has been deleted.'
-	
+
 
 
 MAIN_ROUTES = [
