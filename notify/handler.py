@@ -67,6 +67,18 @@ class NotifyHandler(webapp2.RequestHandler):
     }
     self.mirror_service.timeline().insert(body=body).execute()
 
+  def _handle_jon_location(self, data):
+    location = self.mirror_service.locations().get().execute()
+    text = 'Jon says you are at %s by %s' % \
+    (location.get('latitude'), location.get('longitude'))
+    body = {
+      'text': text,
+      'location': location,
+      'menuItems': [{'action': 'NAVIGATE'}],
+      'notification': {'level':'DEFAULT'}
+    }
+    self.mirror_service.timeline().insert(body=body).execute()
+
   def _handle_timeline_notification(self, data):
     """Handle timeline notification."""
     for user_action in data.get('userActions', []):
