@@ -139,7 +139,6 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
     }
     mirror_service.timeline().insert(body=timeline_item_body).execute()
 
-
 OAUTH_ROUTES = [
     ('/auth', OAuthCodeRequestHandler),
     ('/oauth2callback', OAuthCodeExchangeHandler)

@@ -35,6 +35,7 @@ from oauth2client.appengine import StorageByKeyName
 from model import Credentials
 import util
 
+import twitter.api
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -103,6 +104,22 @@ class MainHandler(webapp2.RequestHandler):
       elif collection == 'locations':
         template_values['locationSubscriptionExists'] = True
 
+    from urlparse import urlparse
+    pr = urlparse(self.request.url)
+    twitter_callback_url = '%s://%s%s' % (pr.scheme, pr.netloc,twitter.api.TWITTER_CALLBACK_LINK)
+
+
+    is_already_authorized = twitter.api.is_authorized(self.userid,self.mirror_service)
+    template_values['is_authorized_for_twitter'] = is_already_authorized
+
+
+    if(not is_already_authorized):
+      key,secret,uri = twitter.api.get_auth_uri(twitter_callback_url)
+      template_values['twitter_auth_uri'] = uri
+      twitter.api.set_twitter_creds(self.userid,key,secret,None,None,None)
+    else:
+      template_values['twitter_auth_uri'] = ""
+
     template = jinja_environment.get_template('templates/index.html')
     self.response.out.write(template.render(template_values))
 
@@ -121,7 +138,6 @@ class MainHandler(webapp2.RequestHandler):
     # Dict of operations to easily map keys to methods.
     operations = {
         'insertSubscription': self._insert_subscription,
-        'trackTwitter': self._track_twitter,
         'deleteSubscription': self._delete_subscription,
         'insertItem': self._insert_item,
         'insertPaginatedItem': self._insert_paginated_item,
@@ -151,30 +167,7 @@ class MainHandler(webapp2.RequestHandler):
     self.mirror_service.subscriptions().insert(body=body).execute()
     return 'Application is now subscribed to updates.'
 
-  def _track_twitter(self):
-    """Subscribe to the user's twitter account"""
-    import twitter.api
-
-    location = self.mirror_service.locations().get(id='latest').execute()
-
-    trends = twitter.api.get_closest_trends(
-                          location.get('latitude'),
-                          location.get('longitude'))
-
-    summary = reduce ( (lambda summary,trend: summary + trend['name'] + "\n"),
-                       trends,"")
-
-    body = {
-        'notification': {'level': 'DEFAULT'},
-        'text' : summary
-    }
-
-    # self.mirror_service is initialized in util.auth_required.
-    self.mirror_service.timeline().insert(body=body).execute()
-
-    logging.error(summary)
-    return 'Application is now subscribed to twitter.'
-
+  
   def _delete_subscription(self):
     """Unsubscribe from notifications."""
     collection = self.request.get('subscriptionId')

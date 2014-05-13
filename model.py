@@ -29,3 +29,9 @@ class Credentials(db.Model):
   used by the Storage classes to store OAuth 2.0 credentials in the data store.
   """
   credentials = CredentialsProperty()
+
+  twitter_oauth_token_key = db.StringProperty(required=False)
+  twitter_oauth_token_secret = db.StringProperty(required=False)
+  twitter_oauth_verifier = db.StringProperty(required=False)
+  twitter_access_token = db.StringProperty(required=False)
+  twitter_access_secret = db.StringProperty(required=False)
