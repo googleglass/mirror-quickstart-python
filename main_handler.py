@@ -35,6 +35,7 @@ from oauth2client.appengine import StorageByKeyName
 from model import Credentials
 import util
 
+import twitter.api
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -103,6 +104,22 @@ class MainHandler(webapp2.RequestHandler):
       elif collection == 'locations':
         template_values['locationSubscriptionExists'] = True
 
+    from urlparse import urlparse
+    pr = urlparse(self.request.url)
+    twitter_callback_url = '%s://%s%s' % (pr.scheme, pr.netloc,twitter.api.TWITTER_CALLBACK_LINK)
+
+
+    is_already_authorized = twitter.api.is_authorized(self.userid,self.mirror_service)
+    template_values['is_authorized_for_twitter'] = is_already_authorized
+
+
+    if(not is_already_authorized):
+      key,secret,uri = twitter.api.get_auth_uri(twitter_callback_url)
+      template_values['twitter_auth_uri'] = uri
+      twitter.api.set_twitter_creds(self.userid,key,secret,None,None,None)
+    else:
+      template_values['twitter_auth_uri'] = ""
+
     template = jinja_environment.get_template('templates/index.html')
     self.response.out.write(template.render(template_values))
 
@@ -150,6 +167,7 @@ class MainHandler(webapp2.RequestHandler):
     self.mirror_service.subscriptions().insert(body=body).execute()
     return 'Application is now subscribed to updates.'
 
+  
   def _delete_subscription(self):
     """Unsubscribe from notifications."""
     collection = self.request.get('subscriptionId')
@@ -204,9 +222,21 @@ class MainHandler(webapp2.RequestHandler):
             'displayName': 'Python Starter Project',
             'id': 'PYTHON_STARTER_PROJECT'
         },
-        'text': 'Tell me what you had for lunch :)',
+        'text': 'Tell me what you had for brunch :)',
         'notification': {'level': 'DEFAULT'},
-        'menuItems': [{'action': 'REPLY'}]
+        'menuItems': [
+          {
+              "action": "CUSTOM",
+              "id": "complete",
+              "values": [{
+                "displayName": "Complete",
+                "iconUrl": "https://cdn3.iconfinder.com/data/icons/picons-social/57/28-appstore-64.png"
+              }]
+          },
+          {
+            'action': 'SHARE'
+          }
+        ]
     }
     # self.mirror_service is initialized in util.auth_required.
     self.mirror_service.timeline().insert(body=body).execute()

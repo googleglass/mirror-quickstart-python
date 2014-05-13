@@ -39,11 +39,17 @@ def get_full_url(request_handler, path):
   pr = urlparse(request_handler.request.url)
   return '%s://%s%s' % (pr.scheme, pr.netloc, path)
 
+def load_session_userid(request_handler):
+  """Load userid from the current session."""
+  session = sessions.LilCookies(request_handler, SESSION_SECRET)
+  userid = session.get_secure_cookie(name='userid')
+  return userid
+
 
 def load_session_credentials(request_handler):
   """Load credentials from the current session."""
   session = sessions.LilCookies(request_handler, SESSION_SECRET)
-  userid = session.get_secure_cookie(name='userid')
+  userid = load_session_userid(request_handler)
   if userid:
     return userid, StorageByKeyName(Credentials, userid, 'credentials').get()
   else:

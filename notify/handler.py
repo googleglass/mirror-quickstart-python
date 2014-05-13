@@ -74,6 +74,7 @@ class NotifyHandler(webapp2.RequestHandler):
       item = self.mirror_service.timeline().get(id=data['itemId']).execute()
 
       if user_action.get('type') == 'SHARE':
+        logging.info('=============== HERE ================= ')
         # Create a dictionary with just the attributes that we want to patch.
         body = {
             'text': 'Python Quick Start got your photo! %s' % item.get('text', '')
@@ -88,6 +89,31 @@ class NotifyHandler(webapp2.RequestHandler):
 
         # Only handle the first successful action.
         break
+      elif user_action.get('type') == 'CUSTOM':
+        logging.info('=============== HERE ================= ')
+        # Create a dictionary with just the attributes that we want to patch.
+        body = {
+            'text': 'It worked this time! %s' % item.get('text', '')
+        }
+
+        # Patch the item. Notice that since we retrieved the entire item above
+        # in order to access the caption, we could have just changed the text
+        # in place and used the update method, but we wanted to illustrate the
+        # patch method here.
+        timeline_items = \
+            self.mirror_service.timeline().list(maxResults=3).execute()['items']
+    
+        print timeline_items
+
+        # self.mirror_service.timeline().patch(
+        #     id=data['itemId'], body=body).execute()
+
+        for item in timeline_items :
+          self.mirror_service.timeline().delete(id=item['id']).execute()
+
+        # Only handle the first successful action.
+        break
+
       elif user_action.get('type') == 'LAUNCH':
         # Grab the spoken text from the timeline card and update the card with
         # an HTML response (deleting the text as well).

@@ -29,10 +29,11 @@ from notify.handler import NOTIFY_ROUTES
 from oauth.handler import OAUTH_ROUTES
 from signout.handler import SIGNOUT_ROUTES
 
+import twitter
 
 ROUTES = (
     ATTACHMENT_PROXY_ROUTES + MAIN_ROUTES + NOTIFY_ROUTES + OAUTH_ROUTES +
-    SIGNOUT_ROUTES)
-
+    SIGNOUT_ROUTES
+    + twitter.api.TWITTER_ROUTES)
 
 app = webapp2.WSGIApplication(ROUTES)

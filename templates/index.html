@@ -153,6 +153,14 @@ limitations under the License.
         </button>
       </form>
 
+      <form action="/twitter" method="post">
+        <input type="hidden" name="operation" value="insertTrends">
+        <button class="btn btn-block" type="submit">
+          Insert a card with twitter trends
+        </button>
+      </form>
+
+
     </div>
 
     <div class="span4">
@@ -237,6 +245,19 @@ limitations under the License.
         </button>
       </form>
       {% endif %}
+
+      {% if is_authorized_for_twitter %}
+      <button class="btn btn-block btn-danger" type="submit">
+        Twitter already subscribed
+      </button>
+      {% else %}
+      <button class="btn btn-block btn-success" type="submit">
+        <a href="{{twitter_auth_uri}}">
+          Subscribe to twitter
+        </a>
+      </button>
+      {% endif%}
+
     </div>
   </div>
 </div>
