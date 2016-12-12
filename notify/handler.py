@@ -26,6 +26,9 @@ from random import choice
 from apiclient.http import MediaIoBaseUpload
 from oauth2client.appengine import StorageByKeyName
 
+from google.appengine.api import urlfetch, taskqueue
+import httplib2
+
 from model import Credentials
 import util
 
@@ -41,7 +44,23 @@ class NotifyHandler(webapp2.RequestHandler):
   """Request Handler for notification pings."""
 
   def post(self):
+    # Add the task to the default queue.
+
+    logging.info('Queuing request with payload %s', self.request.body)
+
+    taskqueue.add(url='/worker', payload=self.request.body)
+
+
+
+class WorkerHandler(webapp2.RequestHandler):
+  """Request Handler for worker pings."""
+
+  def post(self):
     """Handles notification pings."""
+
+    urlfetch.set_default_fetch_deadline(45)
+    httplib2.Http(timeout=45) 
+
     logging.info('Got a notification with payload %s', self.request.body)
     data = json.loads(self.request.body)
     userid = data['userToken']
@@ -109,5 +128,6 @@ class NotifyHandler(webapp2.RequestHandler):
 
 
 NOTIFY_ROUTES = [
-    ('/notify', NotifyHandler)
+    ('/notify', NotifyHandler),
+    ('/worker', WorkerHandler)
 ]
