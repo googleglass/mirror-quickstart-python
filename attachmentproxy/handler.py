@@ -19,7 +19,6 @@ __author__ = 'alainv@google.com (Alain Vongsouvanh)'
 
 import logging
 import webapp2
-
 from util import auth_required
 
 
@@ -30,9 +29,11 @@ class AttachmentProxyHandler(webapp2.RequestHandler):
   def get(self):
     """Return the attachment's content using the current user's credentials."""
     # self.mirror_service is initialized in util.auth_required.
+    
     attachment_id = self.request.get('attachment')
     item_id = self.request.get('timelineItem')
     logging.info('Attachment ID: %s', attachment_id)
+    
     if not attachment_id or not item_id:
       self.response.set_status(400)
       return
@@ -45,6 +46,7 @@ class AttachmentProxyHandler(webapp2.RequestHandler):
 
       # Retrieve the attachment's content.
       resp, content = self.mirror_service._http.request(content_url)
+    
       if resp.status == 200:
         self.response.headers.add_header('Content-type', content_type)
         self.response.out.write(content)
@@ -54,5 +56,7 @@ class AttachmentProxyHandler(webapp2.RequestHandler):
 
 
 ATTACHMENT_PROXY_ROUTES = [
-    ('/attachmentproxy', AttachmentProxyHandler)
+    
+  ('/attachmentproxy', AttachmentProxyHandler)
+
 ]
