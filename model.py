@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """Datastore models for Starter Project"""
-
+import matplotlib.pyplot as plt
 __author__ = 'alainv@google.com (Alain Vongsouvanh)'
 
 
