@@ -96,7 +96,7 @@ class OAuthCodeExchangeHandler(OAuthBaseRequestHandler):
     self.redirect('/')
 
   def _perform_post_auth_tasks(self, userid, creds):
-    """Perform commong post authorization tasks.
+    """Perform common post authorization tasks.
 
     Subscribes the service to notifications for the user and add one sharing
     contact.
